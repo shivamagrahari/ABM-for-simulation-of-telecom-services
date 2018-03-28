@@ -173,6 +173,11 @@ public class ABM  {
         int ac=0;
         int loss[]=new int[(int)Math.pow(no_of_strategy,no_of_serviceprovider+1)*3];
         
+   // Risk Analysis variables     
+        int check=0;
+        int us_qos[] = new int[1000];
+        int us_price[] =new int[1000];
+        
         System.out.println("Here Option  :");
         System.out.println("Press 1 for Data Analsys");
         System.out.println("Press 2 for Risk Analsys");
@@ -650,14 +655,13 @@ public class ABM  {
             
         case 2:
             
-            int check=0;
-            
+           int fix=0;
             
             sp[no_of_serviceprovider] = new ServiceProvider();
         do
         {
             c=0;
-            check=0;
+           
                     do
                     {
                         if(c>0)
@@ -701,25 +705,37 @@ public class ABM  {
             
           for(int i=0 ; i<(int)Math.pow(no_of_strategy,no_of_serviceprovider+1)*3;i++ ) // Regression
             {
-
-                for(int j=0;j<no_of_serviceprovider+1;j++)  // Every proivder pick's strategy randomly
+              
+               
+                  for(int j=0;j<no_of_serviceprovider+1;j++)  // Every proivder pick's strategy randomly
                 {
 
                     Grid[j] = (int)(Math.random()*(no_of_strategy));
                     System.out.print(Grid[j]+"  ");
                 }
+                  
+                  
+              
+              
                 loss[i]=0;
                 System.out.println();
                 for(int k=0 ; k<1000 ; k++)    // for 1000 users
                 { 
                     // randomly pick price and QoS by user 
-                    userQoS = user.pickQoS();
-                    userPrice = user.pickCost();
-                    if(ac==0)
-                    System.out.println(k+" :"+"UserQos:"+userQoS+"userPrice"+userPrice);
+                   if(fix!=1)
+                   {
+                       userQoS = user.pickQoS();
+                       userPrice = user.pickCost();
+                       us_qos[k] = userQoS;
+                       us_price[k] = userPrice;
+                   }
+                    
+                     check=0;
+                    //if(i<=1)
+                    //System.out.println(k+" :"+"UserQos:"+us_qos[k]+"userPrice"+us_price[k]);
                     
                     
-                    user_ratio = (userPrice/userQoS);
+                    user_ratio = (us_price[k]/us_qos[k]);
 
                     // Implementation of C-DISC algorithm
 
@@ -742,56 +758,58 @@ public class ABM  {
 
                         service_provider_price = sp[l].getprice(Grid[l]);
                         
-                        if(service_provider_qos >= (int)(0.7*userQoS)  && service_provider_qos <= (int)(1.3*userQoS) && service_provider_price >= (int)(0.7*userPrice) && service_provider_price <= (int)(1.3*userPrice))
+                        if(service_provider_qos >= (int)(0.7*us_qos[k])  && service_provider_qos <= (int)(1.3*us_qos[k]) && service_provider_price >= (int)(0.7*us_price[k]) && service_provider_price <= (int)(1.3*us_price[k]))
                         {
-                            if((service_provider_qos - userQoS) > 0  && (service_provider_price - userPrice)  < 0  )   // region1
+                            if((service_provider_qos - us_qos[k]) > 0  && (service_provider_price - us_price[k])  < 0  )   // region1
                             {
                                 flag1=1;
                                 
-                                if(Math.abs(service_provider_qos - userQoS)+Math.abs(service_provider_price - userPrice) > maximum1)
+                                if(Math.abs(service_provider_qos - us_qos[k])+Math.abs(service_provider_price - us_price[k]) > maximum1)
                                 {
                                     choice=l;
-                                    maximum1 = Math.abs(service_provider_qos - userQoS)+Math.abs(service_provider_price - userPrice);
+                                    maximum1 = Math.abs(service_provider_qos - us_qos[k])+Math.abs(service_provider_price - us_price[k]);
                                 }
                             
                             }
-                            else if((service_provider_qos - userQoS) > 0  && (service_provider_price - userPrice)  > 0 && flag1==0) // region2
+                            else if((service_provider_qos - us_qos[k]) > 0  && (service_provider_price - us_price[k])  > 0 && flag1==0) // region2
                             {
                                 flag2=1;
                                 
-                                 if(Math.abs(service_provider_qos - userQoS)+Math.abs(service_provider_price - userPrice) > maximum2)
+                                 if(Math.abs(service_provider_qos - us_qos[k])+Math.abs(service_provider_price - us_price[k]) > maximum2)
                                 {
                                     choice=l;
-                                    maximum2 = Math.abs(service_provider_qos - userQoS)+Math.abs(service_provider_price - userPrice);
+                                    maximum2 = Math.abs(service_provider_qos - us_qos[k])+Math.abs(service_provider_price - us_price[k]);
                                 }
                             
                             }
-                            else if((service_provider_qos - userQoS) < 0  && (service_provider_price - userPrice)  < 0 && flag1==0 && flag2==0) //region3
+                            else if((service_provider_qos - us_qos[k]) < 0  && (service_provider_price - us_price[k])  < 0 && flag1==0 && flag2==0) //region3
                             {
                                 flag3=1;
                                 
-                                 if(Math.abs(service_provider_qos - userQoS)+Math.abs(service_provider_price - userPrice) < minimum1)
+                                 if(Math.abs(service_provider_qos - us_qos[k])+Math.abs(service_provider_price - us_price[k]) < minimum1)
                                 {
                                     choice=l;
-                                    minimum1 = Math.abs(service_provider_qos - userQoS)+Math.abs(service_provider_price - userPrice);
+                                    minimum1 = Math.abs(service_provider_qos - us_qos[k])+Math.abs(service_provider_price - us_price[k]);
                                 }
                             
                             
                             }
-                            else if((service_provider_qos - userQoS) < 0  && (service_provider_price - userPrice)  > 0 && flag1==0 && flag2==0 && flag3==0)   //region4
+                            else if((service_provider_qos - us_qos[k]) < 0  && (service_provider_price - us_price[k])  > 0 && flag1==0 && flag2==0 && flag3==0)   //region4
                             {
                                 flag4=1;
                                 
-                                if(Math.abs(service_provider_qos - userQoS)+Math.abs(service_provider_price - userPrice) < minimum2)
+                                if(Math.abs(service_provider_qos - us_qos[k])+Math.abs(service_provider_price - us_price[k]) < minimum2)
                                 {
                                     choice=l;
-                                    minimum2 = Math.abs(service_provider_qos - userQoS)+Math.abs(service_provider_price - userPrice);
+                                    minimum2 = Math.abs(service_provider_qos - us_qos[k])+Math.abs(service_provider_price - us_price[k]);
                                 }
                             
                             }
                             
                         }
                     }
+                    
+                    
                     if(flag1==1 || flag2==1 || flag3==1 || flag4==1 )
                   { 
                       
@@ -807,6 +825,7 @@ public class ABM  {
 
             }
                 ac=1;
+                fix=1;
         }
             for(int i=0 ; i<(int)Math.pow(no_of_strategy,no_of_serviceprovider+1)*3;i++ )
             {
@@ -830,7 +849,7 @@ public class ABM  {
         for(int i=0 ; i<(int)Math.pow(no_of_strategy,no_of_serviceprovider+1)*3;i++ )
             {
                  
-                    if(win[i][no_of_serviceprovider] >= (int)(1000/(no_of_serviceprovider+1)) *.75 )
+                    if(win[i][no_of_serviceprovider] >= (int)((1000/(no_of_serviceprovider+1)) *.75) )
                     {
                         accuracy++;
                             

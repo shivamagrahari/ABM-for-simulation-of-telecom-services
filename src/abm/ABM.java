@@ -176,7 +176,8 @@ public class ABM  {
    // Risk Analysis variables     
         int check=0;
         int us_qos[] = new int[1000];
-        int us_price[] =new int[1000];
+        int us_price[] = new int[1000];
+        int Grid1[][] = new int[(int)Math.pow(no_of_strategy,no_of_serviceprovider+1)*3][no_of_serviceprovider+1];
         
         System.out.println("Here Option  :");
         System.out.println("Press 1 for Data Analsys");
@@ -575,7 +576,8 @@ public class ABM  {
             //Market Analysis
 
             int Bad,Good,Moderate,flag;
-            ArrayList<Integer> arr = new ArrayList<Integer>(); 
+            ArrayList<Integer> arr = new ArrayList<Integer>();
+            
             //Scatterplot s = new Scatterplot();
             float count_bad=0,count_moderate=0,count_good=0;
 
@@ -655,7 +657,7 @@ public class ABM  {
             
         case 2:
             
-           int fix=0;
+           int fix=0,fix1=0;
             
             sp[no_of_serviceprovider] = new ServiceProvider();
         do
@@ -706,19 +708,21 @@ public class ABM  {
           for(int i=0 ; i<(int)Math.pow(no_of_strategy,no_of_serviceprovider+1)*3;i++ ) // Regression
             {
               
-               
-                  for(int j=0;j<no_of_serviceprovider+1;j++)  // Every proivder pick's strategy randomly
-                {
+               if(fix1!=1)
+               {
+                   for(int j=0;j<no_of_serviceprovider+1;j++)  // Every proivder pick's strategy randomly
+                    {
 
-                    Grid[j] = (int)(Math.random()*(no_of_strategy));
-                    System.out.print(Grid[j]+"  ");
-                }
+                        Grid1[i][j] = (int)(Math.random()*(no_of_strategy));
+                        System.out.print(Grid1[i][j]+"  ");
+                    }
+                   System.out.println();
                   
-                  
+               }  
               
               
                 loss[i]=0;
-                System.out.println();
+              //  System.out.println();
                 for(int k=0 ; k<1000 ; k++)    // for 1000 users
                 { 
                     // randomly pick price and QoS by user 
@@ -754,9 +758,9 @@ public class ABM  {
                     
                     for(int l=0; l < no_of_serviceprovider+1;l++)
                     {
-                        service_provider_qos = sp[l].getQos(Grid[l]);
+                        service_provider_qos = sp[l].getQos(Grid1[i][l]);
 
-                        service_provider_price = sp[l].getprice(Grid[l]);
+                        service_provider_price = sp[l].getprice(Grid1[i][l]);
                         
                         if(service_provider_qos >= (int)(0.7*us_qos[k])  && service_provider_qos <= (int)(1.3*us_qos[k]) && service_provider_price >= (int)(0.7*us_price[k]) && service_provider_price <= (int)(1.3*us_price[k]))
                         {
@@ -813,7 +817,7 @@ public class ABM  {
                     if(flag1==1 || flag2==1 || flag3==1 || flag4==1 )
                   { 
                       
-                      payoff[i][choice]+=sp[choice].getprice(Grid[choice]);   //payoff calculation using clark's mechanisam
+                      payoff[i][choice]+=sp[choice].getprice(Grid1[i][choice]);   //payoff calculation using clark's mechanisam(first bid auction)
                       win[i][choice]++;  // tracking number of user for each service privider
                   }
                   else
@@ -827,6 +831,9 @@ public class ABM  {
                 ac=1;
                 fix=1;
         }
+          
+          fix1=1;
+          
             for(int i=0 ; i<(int)Math.pow(no_of_strategy,no_of_serviceprovider+1)*3;i++ )
             {
                 for(int j=0;j<no_of_serviceprovider+1;j++)
@@ -879,6 +886,12 @@ public class ABM  {
               
                 Arrays.fill(payoff[i], 0);
               }
+              
+              
+                    sp[no_of_serviceprovider].rem();   
+                    sp[no_of_serviceprovider].rem();
+                
+              
             }
             
             

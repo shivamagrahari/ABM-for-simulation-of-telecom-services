@@ -42,6 +42,11 @@ public class ServiceProvider {
      {
          return Price.get(strategy); 
      }
-      
+     
+      public void rem()
+      {
+          this.qos.removeAll(this.qos);
+          this.Price.removeAll(this.Price);
+      }
      
 }

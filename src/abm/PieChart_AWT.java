@@ -17,7 +17,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
 import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
  
 public class PieChart_AWT extends ApplicationFrame {
    static double very_good=0,moderate=0,bad=0;
@@ -44,7 +43,8 @@ public class PieChart_AWT extends ApplicationFrame {
       
       
       //dataset.setValue( "" , new Double( 40 ) );    
-      dataset.setValue( "bad" , new Double( bad ) );  
+      dataset.setValue( "bad" , new Double( bad ) ); 
+      if(moderate!=0)
       dataset.setValue( "moderate" , new Double( moderate ) );   
        dataset.setValue( "very good" , new Double( very_good ) ); 
       return dataset;         

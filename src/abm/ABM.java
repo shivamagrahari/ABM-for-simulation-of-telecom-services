@@ -457,7 +457,7 @@ public class ABM  {
                         
                             if(service_provider_price <= userPrice)      //price constraint
                             { 
-                               
+                               10
                                      try
                                 {
                                     service_provider_ratio = (service_provider_price/service_provider_qos);
